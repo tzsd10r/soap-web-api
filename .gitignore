@@ -1,6 +1,8 @@
 .gradle
 /build/
 .vscode
+bin
+/target/
 !gradle/wrapper/gradle-wrapper.jar
 
 ### STS ###
