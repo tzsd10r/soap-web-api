@@ -1,7 +1,7 @@
 .gradle
 /build/
-.vscode
-bin
+/.vscode/
+/bin/
 /target/
 !gradle/wrapper/gradle-wrapper.jar
 
