@@ -18,6 +18,7 @@ apply plugin: 'io.spring.dependency-management'
 group = 'org.oclc'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
 	mavenCentral()
@@ -36,6 +37,11 @@ dependencies {
 	implementation('de.codecentric:spring-boot-admin-starter-server')
 	implementation('org.springframework.cloud:spring-cloud-starter-sleuth')
 	implementation('org.codehaus.groovy:groovy')
+
+	compile("wsdl4j:wsdl4j:1.6.1")
+    jaxb("org.glassfish.jaxb:jaxb-xjc:2.2.11")
+    compile(files(genJaxb.classesDir).builtBy(genJaxb))
+
 	runtimeOnly('org.springframework.boot:spring-boot-devtools')
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
 	testImplementation('org.springframework.security:spring-security-test')
@@ -46,4 +52,47 @@ dependencyManagement {
 		mavenBom "de.codecentric:spring-boot-admin-dependencies:${springBootAdminVersion}"
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
 	}
+}
+
+task genJaxb {
+    ext.sourcesDir = "${buildDir}/generated-sources/jaxb"
+    ext.classesDir = "${buildDir}/classes/jaxb"
+    ext.schema = "src/main/resources/xsd/*"
+
+    outputs.dir classesDir
+
+    doLast() {
+        project.ant {
+            taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
+            mkdir(dir: sourcesDir)
+            mkdir(dir: classesDir)
+
+            xjc(destdir: sourcesDir, schema: schema) {
+                arg(value: "-wsdl")
+                produces(dir: sourcesDir, includes: "**/*.java")
+            }
+
+            javac(destdir: classesDir, source: 1.6, target: 1.6, debug: true, debugLevel: "lines,vars,source", classpath: configurations.jaxb.asPath) {
+                src(path: sourcesDir)
+                include(name: "**/*.java")
+                include(name: "*.java")
+            }
+
+            copy(todir: classesDir) {
+                fileset(dir: sourcesDir, erroronmissingdir: false) {
+                    exclude(name: "**/*.java")
+                }
+            }
+        }
+    }
+}
+
+configurations {
+    jaxb
+}
+
+bootJar {
+    baseName = 'wciru-web-api'
+    version =  '0.1.0'
+    from genJaxb.classesDir
 }

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xmlns:upd="http://www.loc.gov/zing/srw/update/" 
+    xmlns:srw="http://www.loc.gov/zing/srw/" targetNamespace="http://www.loc.gov/zing/srw/update/" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+    <!-- xmlns:diag="http://www.loc.gov/zing/srw/diagnostic/" targetNamespace="http://www.loc.gov/zing/srw/update/" elementFormDefault="unqualified" attributeFormDefault="unqualified"> -->
+
+    <!-- imports -->
+    <xs:import namespace="http://www.loc.gov/zing/srw/" schemaLocation="srw-types.xsd"/>
+    <!-- <xs:import namespace="http://www.loc.gov/zing/srw/diagnostic/" schemaLocation="diagnostics.xsd"/> -->
+
+    <!-- elements being referenced by other elements -->
+    <xs:element name="recordIdentifier" type="xs:string" nillable="true"/>
+    <xs:element name="extraRequestData" nillable="false">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="authenticationToken" type="xs:string" nillable="false"/>
+                <xs:element name="projectid" type="xs:string" nillable="false"/>
+                <xs:element name="editReplace" nillable="true">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="dataIdentifier" type="xs:string" />
+                            <xs:element name="oldValue" type="xs:string" />
+                            <xs:element name="newValue" type="xs:string" />
+                            <xs:element name="editReplaceType" type="xs:string" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="recordVersions" nillable="true">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="recordVersion" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="versionType" type="xs:string" nillable="false"/>
+                            <xs:element name="versionValue" type="xs:string" nillable="false"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xsd:element>
+
+    <!-- elements that reference other elements -->
+    <xs:element name="updateRequest">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="srw:requestType">
+                    <xs:sequence>
+                        <xs:element ref="srw:version"/>
+                        <xs:element name="action" type="xs:string" nillable="false"/>
+                        <xs:element ref="upd:recordIdentifier" minOccurs="0"/>
+                        <xs:element ref="upd:recordVersions" minOccurs="0"/>
+                        <xs:element ref="srw:record"/>
+                        <xs:element ref="upd:extraRequestData"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="updateResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="srw:responseType">
+                    <xs:sequence>
+                        <xs:element name="operationStatus">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="success"/>
+                                    <xs:enumeration value="fail"/>
+                                    <xs:enumeration value="partial"/>
+                                    <xs:enumeration value="delayed"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element ref="upd:recordIdentifier" minOccurs="0"/>
+                        <xs:element ref="upd:recordVersions" minOccurs="0"/>
+                        <xs:element ref="srw:record"/>
+                        <xs:element ref="srw:diagnostics" minOccurs="0"/>
+                        <xs:element ref="srw:extraResponseData" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="explainRequest" nillable="false">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="srw:requestType">
+                    <xs:sequence>
+                        <xs:element ref="srw:recordPacking" minOccurs="0"/>
+                        <xs:element ref="srw:extraRequestData" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="explainResponse" nillable="false">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="srw:responseType">
+                    <xs:sequence>
+                        <xs:element ref="srw:record"/>
+                        <xs:element ref="srw:diagnostics" minOccurs="0"/>
+                        <xs:element ref="srw:extraResponseData" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+
+
+
+</xs:schema>

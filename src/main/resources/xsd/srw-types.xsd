@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xmlns="http://www.loc.gov/zing/srw/" 
+    xmlns:diag="http://www.loc.gov/zing/srw/diagnostic/" 
+    xmlns:xcql="http://www.loc.gov/zing/cql/xcql/" targetNamespace="http://www.loc.gov/zing/srw/" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <!-- imports -->
+    <xs:import namespace="http://www.loc.gov/zing/cql/xcql/" schemaLocation="xcql.xsd"/>
+    <xs:import namespace="http://www.loc.gov/zing/srw/diagnostic/" schemaLocation="diagnostics.xsd"/>
+
+    <!-- complex types being referenced in shared elements -->
+    <xsd:complexType name="extraDataType">
+        <xsd:sequence>
+            <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- elements that do not reference other elements -->
+    <xs:element name="sortKey" nillable="false">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="path" type="xs:string" nillable="false"/>
+                <xs:element name="schema" type="xs:string" nillable="false" minOccurs="0"/>
+                <xs:element name="ascending" type="xs:boolean" nillable="false" minOccurs="0"/>
+                <xs:element name="caseSensitive" type="xs:boolean" nillable="false" minOccurs="0"/>
+                <xs:element name="missingValue" type="xs:string" nillable="false" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- elements being referenced by other elements -->
+    <xs:element name="scanClause" type="xs:string" nillable="false"/>
+    <xs:element name="responsePosition" type="xs:nonNegativeInteger" default="1" nillable="false"/>
+    <xs:element name="maximumTerms" type="xs:positiveInteger" nillable="false"/>
+    <xs:element name="numberOfRecords" type="xs:nonNegativeInteger" nillable="false"/>
+    <xs:element name="version" type="xs:string" nillable="false"/>
+    <xs:element name="query" type="xs:string" nillable="false"/>
+    <xs:element name="startRecord" type="xs:positiveInteger" default="1" nillable="false"/>
+    <xs:element name="maximumRecords" type="xs:nonNegativeInteger" nillable="false"/>
+    <xs:element name="recordPacking" type="xs:string" nillable="false"/>
+    <xs:element name="recordSchema" type="xs:string" nillable="false"/>
+    <xs:element name="recordXPath" type="xs:string" nillable="false"/>
+    <xs:element name="resultSetTTL" type="xs:nonNegativeInteger" nillable="false"/>
+    <xs:element name="stylesheet" type="xs:anyURI" nillable="false"/>
+    <xs:element name="sortKeys" type="xs:string" nillable="false"/>
+    <xs:element name="extraRequestData" type="extraDataType" nillable="false"/>
+    <xs:element name="extraResponseData" type="extraDataType" nillable="false"/>
+
+    <!-- elements that reference other elements -->
+    <xs:element name="diagnostics" nillable="false">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="diag:diagnostic" maxOccurs="unbounded"/>
+                <xs:element name="extraDiagData" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- complex types being used in main elements -->
+    <xs:complexType name="requestType">
+        <xs:sequence>
+            <xs:element ref="version"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="responseType">
+        <xs:sequence>
+            <xs:element ref="version"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="stringOrXmlFragment" mixed="true">
+        <xs:sequence>
+            <xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- elements that reference other elements (main elements) -->
+    <!-- ********************************** -->
+    <!-- search retrieve request  section   -->
+    <!-- ********************************** -->
+    <xs:element name="searchRetrieveRequest" nillable="false">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="requestType">
+                    <xs:sequence>
+                        <xs:element ref="query"/>
+                        <xs:element ref="startRecord" minOccurs="0"/>
+                        <xs:element ref="maximumRecords" minOccurs="0"/>
+                        <xs:element ref="recordPacking" minOccurs="0"/>
+                        <xs:element ref="recordSchema" minOccurs="0"/>
+                        <xs:element ref="recordXPath" minOccurs="0"/>
+                        <xs:element ref="resultSetTTL" minOccurs="0"/>
+                        <xs:element ref="sortKeys" minOccurs="0"/>
+                        <xs:element ref="stylesheet" minOccurs="0"/>
+                        <xs:element ref="extraRequestData" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ********************************** -->
+    <!-- search retrieve response section   -->
+    <!-- ********************************** -->
+    <xs:element name="searchRetrieveResponse" nillable="false">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="responseType">
+                    <xs:sequence>
+                        <xs:element ref="numberOfRecords"/>
+                        <xs:element name="resultSetId" type="xs:string" nillable="false" minOccurs="0"/>
+                        <xs:element name="resultSetIdleTime" type="xs:positiveInteger" nillable="false" minOccurs="0"/>
+                        <xs:element name="records" nillable="false" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="record" nillable="false" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element ref="recordSchema"/>
+                                                <xs:element ref="recordPacking"/>
+                                                <xs:element name="recordData" type="stringOrXmlFragment" nillable="false"/>
+                                                <xs:element name="recordPosition" type="xs:positiveInteger" nillable="false" minOccurs="0"/>
+                                                <xs:element name="extraRecordData" type="extraDataType" nillable="false" minOccurs="0"/>
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="nextRecordPosition" type="xs:positiveInteger" nillable="false" minOccurs="0"/>
+                        <xs:element name="echoedSearchRetrieveRequest" nillable="false" minOccurs="0">
+                            <xs:complexType>
+                                <xs:complexContent>
+                                    <xs:extension base="requestType">
+                                        <xs:sequence>
+                                            <xs:element ref="query"/>
+                                            <xs:element name="xQuery" type="xcql:operandType" nillable="false"/>
+                                            <xs:element ref="startRecord" minOccurs="0"/>
+                                            <xs:element ref="maximumRecords" minOccurs="0"/>
+                                            <xs:element ref="recordPacking" minOccurs="0"/>
+                                            <xs:element ref="recordSchema" minOccurs="0"/>
+                                            <xs:element ref="recordXPath" minOccurs="0"/>
+                                            <xs:element ref="resultSetTTL" minOccurs="0"/>
+                                            <xs:element ref="sortKeys" minOccurs="0"/>
+                                            <xs:element name="xSortKeys" type="xSortKeysType" nillable="false" minOccurs="0"/>
+                                            <xs:complexType name="xSortKeysType">
+                                                <xs:sequence>
+                                                    <xs:element ref="sortKey" maxOccurs="unbounded"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                            <xs:element ref="stylesheet" minOccurs="0"/>
+                                            <xs:element ref="extraRequestData" minOccurs="0"/>
+                                        </xs:sequence>
+                                    </xs:extension>
+                                </xs:complexContent>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element ref="diagnostics" minOccurs="0"/>
+                        <xs:element ref="extraResponseData" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ********************************** -->
+    <!-- scan request section               -->
+    <!-- ********************************** -->
+    <xs:element name="scanRequest" nillable="false">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="requestType">
+                    <xs:sequence>
+                        <xs:element ref="scanClause"/>
+                        <xs:element ref="responsePosition" minOccurs="0"/>
+                        <xs:element ref="maximumTerms" minOccurs="0"/>
+                        <xs:element ref="stylesheet" minOccurs="0"/>
+                        <xs:element ref="extraRequestData" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ********************************** -->
+    <!-- scan response section              -->
+    <!-- ********************************** -->
+    <xs:element name="scanResponse" nillable="false">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="responseType">
+                    <xs:sequence>
+                        <xs:element name="terms" nillable="false" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="term" nillable="false" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="value" type="xs:string" nillable="false"/>
+                                                <xs:element ref="numberOfRecords" minOccurs="0"/>
+                                                <xs:element name="displayTerm" type="xs:string" nillable="false" minOccurs="0"/>
+                                                <xs:element name="whereInList" minOccurs="0">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:string">
+                                                            <xs:enumeration value="first"/>
+                                                            <xs:enumeration value="last"/>
+                                                            <xs:enumeration value="only"/>
+                                                            <xs:enumeration value="inner"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
+                                                <xs:element name="extraTermData" type="extraDataType" nillable="false" minOccurs="0"/>
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="echoedScanRequest" nillable="false" minOccurs="0">
+                            <xs:complexType>
+                                <xs:complexContent>
+                                    <xs:extension base="requestType">
+                                        <xs:sequence>
+                                            <xs:element ref="scanClause"/>
+                                            <xs:element name="xScanClause" type="xcql:searchClauseType"/>
+                                            <xs:element ref="responsePosition" minOccurs="0"/>
+                                            <xs:element ref="maximumTerms" minOccurs="0"/>
+                                            <xs:element ref="stylesheet" minOccurs="0"/>
+                                            <xs:element ref="extraRequestData" minOccurs="0"/>
+                                        </xs:sequence>
+                                    </xs:extension>
+                                </xs:complexContent>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element ref="diagnostics" minOccurs="0"/>
+                        <xs:element ref="extraResponseData" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ********************************** -->
+    <!-- explain request section            -->
+    <!-- ********************************** -->
+    <xs:element name="explainRequest" nillable="false">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="requestType">
+                    <xs:sequence>
+                        <xs:element ref="recordPacking" minOccurs="0"/>
+                        <xs:element ref="stylesheet" minOccurs="0"/>
+                        <xs:element ref="extraRequestData" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ********************************** -->
+    <!-- explain response section           -->
+    <!-- ********************************** -->
+    <xs:element name="explainResponse" nillable="false">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="responseType">
+                    <xs:sequence>
+                        <xs:element ref="record"/>
+                        <xs:element name="echoedExplainRequest" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element ref="diagnostics" minOccurs="0"/>
+                        <xs:element ref="extraResponseData" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- <xs:complexType name="xmlFragment" mixed="false">
+        <xs:sequence>
+            <xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType> -->
+
+</xs:schema>

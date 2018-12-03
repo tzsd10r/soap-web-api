@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xmlns="http://www.loc.gov/zing/srw/diagnostic/" targetNamespace="http://www.loc.gov/zing/srw/diagnostic/" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <!-- complex types being used in main elements -->
+    <xs:complexType name="diagnosticType">
+        <xs:sequence>
+            <xs:element name="uri" type="xs:anyURI" nillable="false"/>
+            <xs:element name="details" type="xs:string" nillable="false" minOccurs="0" maxOccurs="1" />
+            <xs:element name="message" type="xs:string" nillable="false" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- elements that reference other elements (main elements) -->
+    <xs:element name="diagnostic" type="diagnosticType" nillable="false"/>
+
+</xs:schema>

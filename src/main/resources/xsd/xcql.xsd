@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xmlns="http://www.loc.gov/zing/cql/xcql/" targetNamespace="http://www.loc.gov/zing/cql/xcql/" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <!-- elements being referenced by other elements -->
+    <xs:element name="value" type="xs:string" nillable="false"/>
+    <xs:element name="modifiers" nillable="false">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="modifier" nillable="false" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="type" type="xs:string" nillable="false"/>
+                            <xs:sequence minOccurs="0">
+                                <xs:element name="comparison" type="xs:string" nillable="false"/>
+                                <xs:element ref="value"/>
+                            </xs:sequence>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xsd:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xsd:element>
+
+    <!-- complex types being used in main elements -->
+    <xs:complexType name="operandType">
+        <xs:sequence>
+            <xs:element name="prefixes" nillable="false" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="prefix" nillable="false" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="name" type="xs:string" nillable="false"/>
+                                    <xs:element name="identifier" type="xs:string" nillable="false"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xsd:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xsd:element>
+            <xs:choice>
+                <xsd:element ref="triple" minOccurs="0"/>
+                <xsd:element ref="searchClause" minOccurs="0"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <!-- elements that reference other elements (main elements) -->
+    <xs:element name="triple" nillable="false" minOccurs="0">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="boolean" nillable="false">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element ref="value"/>
+                            <xs:element ref="modifiers" minOccurs="0"/>
+                        </xs:all>
+                    </xs:complexType>
+                </xsd:element>
+                <xs:element name="leftOperand" type="operandType" nillable="false"/>
+                <xs:element name="rightOperand" type="operandType" nillable="false"/>
+            </xs:all>
+        </xs:complexType>
+    </xsd:element>
+
+    <xs:element name="searchClause" nillable="false" minOccurs="0">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="index" type="xs:string" nillable="false"/>
+                <xs:element name="relation" nillable="false">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element ref="value"/>
+                            <xs:element ref="modifiers" minOccurs="0"/>
+                        </xs:all>
+                    </xs:complexType>
+                </xsd:element>
+                <xs:element name="term" type="xs:string" nillable="false"/>
+            </xs:all>
+        </xs:complexType>
+    </xsd:element>
+</xs:schema>
